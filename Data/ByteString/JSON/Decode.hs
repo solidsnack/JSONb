@@ -15,7 +15,7 @@ module Data.ByteString.JSON.Decode where
 import Data.Char
 import Prelude hiding (null, last, takeWhile)
 import qualified Data.ByteString as ByteString.Strict
-import Data.ByteString.Lazy.Char8 hiding (null, takeWhile, elem, unwords, unlines, concatMap)
+import Data.ByteString.Lazy.Char8 hiding (null, takeWhile, elem, concatMap)
 import Control.Applicative hiding (empty)
 
 import qualified Data.ByteString.Lazy.UTF8 as UTF8
