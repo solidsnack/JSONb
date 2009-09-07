@@ -31,8 +31,10 @@ import Data.JSON.Simple
 
 {-| Interpret a 'ByteString' as any JSON literal.
  -}
-parse :: ByteString -> (ByteString, Either ParseError JSON)
-parse                        =  Attoparsec.parse json
+decode :: ByteString -> Either (ByteString, ParseError) JSON
+decode bytes                 =  case Attoparsec.parse json bytes of
+  (remainder, Left e)       ->  Left (remainder, e)
+  (_, Right structure)      ->  Right structure
 
 
 {-| Tries to parse any JSON literal.

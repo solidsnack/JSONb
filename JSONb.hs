@@ -4,7 +4,7 @@
  -}
 module JSONb
   ( Data.JSON.Simple.JSON(..)
-  , Data.ByteString.JSON.Decode.parse
+  , Data.ByteString.JSON.Decode.decode
   ) where
 
 
