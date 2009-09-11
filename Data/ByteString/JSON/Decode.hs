@@ -6,7 +6,7 @@
   #-}
 
 
-{-| Provides validated, unescaped JSON.
+{-| Parse UTF-8 JSON into native Haskell types.
  -}
 
 module Data.ByteString.JSON.Decode where
@@ -15,7 +15,8 @@ module Data.ByteString.JSON.Decode where
 import Data.Char
 import Prelude hiding (null, last, takeWhile)
 import qualified Data.ByteString as ByteString.Strict
-import Data.ByteString.Lazy.Char8 hiding (null, takeWhile, elem, concatMap)
+import Data.ByteString.Lazy.Char8
+  hiding (reverse, null, takeWhile, elem, concatMap)
 import Control.Applicative hiding (empty)
 
 import qualified Data.ByteString.Lazy.UTF8 as UTF8
@@ -81,12 +82,10 @@ array                        =  do
     whitespace
     let
       acc'                   =  something : acc
+      finish                 =  char ']' >> return (reverse acc')
     choice
-      [ char ',' >> whitespace >> choice
-          [ char ']' >> return acc'
-          , elements acc'
-          ]
-      , char ']' >> return acc'
+      [ char ',' >> whitespace >> choice [finish, elements acc']
+      , finish
       ]
 
 
