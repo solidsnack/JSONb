@@ -32,7 +32,7 @@ instance Show JSON where
     Object trie             ->  unlines $ "Object" : trie_show trie
     Array list              ->  unlines $ "Array" : fmap show list
     String bytes            ->  unwords ["String", show bytes]
-    Number rational         ->  unwords ["Rational", show rational]
+    Number rational         ->  unwords ["Number", show rational]
     Boolean bool            ->  unwords ["Boolean", show bool]
     Null                    ->  "Null"
    where
