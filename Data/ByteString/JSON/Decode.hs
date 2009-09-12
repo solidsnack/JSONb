@@ -21,7 +21,7 @@ import Control.Applicative hiding (empty)
 
 import qualified Data.ByteString.Lazy.UTF8 as UTF8
 import qualified Data.Trie.Convenience as Trie
-import Data.ParserCombinators.Attoparsec.Char8 hiding (string, parse)
+import Data.ParserCombinators.Attoparsec.Char8 hiding (string)
 import qualified Data.ParserCombinators.Attoparsec.Char8 as Attoparsec
 import Data.ByteString.Nums.Careless
 

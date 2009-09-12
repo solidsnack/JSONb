@@ -23,7 +23,7 @@ library
                               , utf8-string >= 0.3
                               , bytestring >= 0.9
                               , bytestringparser-temporary >= 0.4.0
-                              , bytestring-nums >= 0.2.1
+                              , bytestring-nums >= 0.3.1
                               , bytestring-trie >= 0.1.4
   exposed-modules             : JSONb
                                 Data.JSON.Simple
