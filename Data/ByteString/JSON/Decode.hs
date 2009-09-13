@@ -51,6 +51,7 @@ json                         =  do
 object                      ::  Parser JSON
 object                       =  do
   char '{'
+  whitespace
   Object . Trie.fromListS <$> properties []
  where
   properties acc             =  do
