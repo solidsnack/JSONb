@@ -70,3 +70,7 @@ esc c                        =  case c of
   '\DEL'                    ->  "\\u007f"
   _                         ->  [c]
 
+
+escaped c                    =  esc c /= [c]
+
+

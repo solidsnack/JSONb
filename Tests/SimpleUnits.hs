@@ -11,50 +11,28 @@ import qualified Data.ByteString.Char8 as Strict
 import Test.QuickCheck
 
 import Data.Trie
+import qualified Data.ByteString.UTF8 as UTF8
 
 import qualified JSONb
+import qualified Text.JSON.Escape as JSONb
 
 
 
 
-object_test                  =  map succeed object_tests_that_should_succeed
+prop_structures_parse        =  samples structure_tests
+
+
+samples tests                =  forAll (elements tests) with_classifiers
  where
-  succeed (parse, should)    =  (parse, parse == (Right . JSONb.Object) should)
-  object_tests_that_should_succeed =
-    [ (rt "{ \"ixion\":6 }", fromList [(Strict.pack "ixion", JSONb.Number 6)])
-    ]
-
-
-prop_arrays_parse            =  forAll (elements tests) with_classifiers
- where
-  with_classifiers          ::  (String, [JSONb.JSON], [String]) -> Property
+  with_classifiers          ::  (String, JSONb.JSON, [String]) -> Property
   with_classifiers           =  compound (property . array_parse) classifiers
    where
     compound                 =  foldl (flip ($))
-  array_parse (s, a, info)   =  rt s == (Right . JSONb.Array) a
+  array_parse (s, j, info)   =  rt s == Right j
   classifiers                =  (fmap classifier . nub . concatMap third) tests 
    where
     third (_,_,t)            =  t
     classifier string p x    =  classify (string `elem` third x) string $ p x
-  tests =
-    [ ( "[ 7, 6 ]", JSONb.Number `fmap` [7, 6]
-      , ["excessive spacing", "integers"] )
-    , ( "[7,6]", JSONb.Number `fmap` [7, 6]
-      , ["compact spacing", "integers"] )
-    , ( "[7.6, 21]", JSONb.Number `fmap` [7.6, 21.0]
-      , ["normal spacing", "floating point"] )
-    , ( "[22.0 ,7.6,]", JSONb.Number `fmap` [22, 7.6]
-      , ["weird comma spacing", "extra comma", "floating point"] )
-    , ( "[\"22.0\" ,7.6,]"
-      , [(JSONb.String . Strict.pack) "22.0", JSONb.Number 7.6]
-      , ["weird comma spacing", "extra comma", "floating point", "string"] )
-    ]
-
-
-data NumArray                =  NumArray [Rational]
-deriving instance Show NumArray
-
-
 
 
 prop_integer_round_trip     ::  Integer -> Property
@@ -83,6 +61,16 @@ prop_double_round_trip n     =  collect bin $ case (rt . show) n of
     | n >= -100              =  Bounds (Closed (100)) Infinite
 
 
+prop_string_round_trip s     =  high . escapes $ case round_trip bytes of
+    Right (JSONb.String b)  ->  bytes == b
+    _                       ->  False
+ where
+  bytes                      =  UTF8.fromString s
+  round_trip                 =  JSONb.decode . JSONb.encode JSONb.Compact . JSONb.String
+  high                       =  classify (any (> '\x7f') s) "above ASCII"
+  escapes                    =  classify (any JSONb.escaped s) "escaped chars"
+
+
 data Bounds n where
   Bounds :: (Show n, Num n) => Bound n -> Bound n -> Bounds n
 instance (Show n) => Show (Bounds n) where
@@ -107,8 +95,48 @@ data Bound n where
 rt                           =  JSONb.decode . pack
 
 
-deepCheck = check (defaultConfig { configMaxTest = 10000})
+deep_check = check (defaultConfig { configMaxTest = 10000 } )
 
 
+structure_tests =
+  [ ( "[ 7, 6 ]", (JSONb.Array . fmap JSONb.Number) [7, 6]
+    , ["array", "excessive spacing", "integers"] )
+  , ( "[7,6]", (JSONb.Array . fmap JSONb.Number) [7, 6]
+    , ["array", "compact spacing", "integers"] )
+  , ( "[7.6, 21]", (JSONb.Array . fmap JSONb.Number) [7.6, 21.0]
+    , ["array", "normal spacing", "floats"] )
+  , ( "[22.0 ,7.6,]", (JSONb.Array . fmap JSONb.Number) [22, 7.6]
+    , ["array", "weird comma spacing", "extra comma", "floats"] )
+  , ( "[\"22.0\" ,7.6,]"
+    , JSONb.Array [(JSONb.String . Strict.pack) "22.0", JSONb.Number 7.6]
+    , ["array", "weird comma spacing", "extra comma", "floats", "strings"] )
+  , ( "{ \"ixion\":6 }"
+    , (JSONb.Object . fromList) [(Strict.pack "ixion", JSONb.Number 6)]
+    , ["object", "no commas", "integers"] )
+  , ( "{ \"Ack\":\"Success\" ,\"Build\" :\"e605_core_Bundled_8000231_R1\"}"
+    , (JSONb.Object . fromList)
+        [ (Strict.pack "Ack", JSONb.String (Strict.pack "Success"))
+        , ( Strict.pack "Build"
+          , JSONb.String (Strict.pack "e605_core_Bundled_8000231_R1") ) ]
+    , ["object", "random spacing", "strings"] )
+  , ( "{\n\"Ack\"\n:\n\"Success\" , \"Build\":\"e605_core_Bundled_8000231_R1\"}"
+    , (JSONb.Object . fromList)
+        [ (Strict.pack "Ack", JSONb.String (Strict.pack "Success"))
+        , ( Strict.pack "Build"
+          , JSONb.String (Strict.pack "e605_core_Bundled_8000231_R1") ) ]
+    , ["object", "newlines", "strings"] )
+  , ( "{\"Ack\":\"Success\",\"Build\":\"e605_core_Bundled_8000231_R1\"}"
+    , (JSONb.Object . fromList)
+        [ (Strict.pack "Ack", JSONb.String (Strict.pack "Success"))
+        , ( Strict.pack "Build"
+          , JSONb.String (Strict.pack "e605_core_Bundled_8000231_R1") ) ]
+    , ["object", "compact spacing", "strings"] )
+  ]
+--,"Version":"605","Item":{"Description":"tbiinternational Store This DVD is used. It was purchased at auction with a box full of other DVDs. I have not personally played it. The case has a few scratches, but the DVD appears in good condition. We have a number of Horror DVDs available and are happy to combine shipping.","ItemID":"150325461532","EndTime":"2009-02-18T20:08:22.000Z","ViewItemURLForNaturalSearch":"http://cgi.ebay.com/Zombie-Holocaust-2002-DVD_W0QQitemZ150325461532QQcategoryZ617QQcmdZViewItem","ListingType":"FixedPriceItem","Location":"Broomfield, Colorado","GalleryURL":"http://thumbs2.ebaystatic.com/pict/1503254615328080_1.jpg","PictureURL":["http://i20.ebayimg.com/01/c/05/b0/b8/f6_7.JPG"],"PrimaryCategoryID":"617","PrimaryCategoryName":"DVDs & Movies:DVD, HD DVD & Blu-ray","BidCount":0,"ConvertedCurrentPrice":{"Value":4.99,"CurrencyID":"USD"},"ListingStatus":"Completed","Title":"Zombie Holocaust (2002, DVD)","Country":"US","AutoPay":false}}
 
+
+instance Arbitrary Char where 
+  arbitrary                  =  (oneof . fmap choose)
+    [ ('\x00', '\x7f') , ('\x20', '\x7f') , (minBound, maxBound) ]
+  coarbitrary c              =  variant (fromEnum c `rem` 4)
 

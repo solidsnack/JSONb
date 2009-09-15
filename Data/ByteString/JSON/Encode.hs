@@ -5,6 +5,7 @@ module Data.ByteString.JSON.Encode where
 
 import Data.Ratio
 import Data.ByteString.Char8
+import qualified Data.ByteString.Lazy as Lazy
 
 import Data.Trie hiding (singleton)
 
@@ -14,11 +15,20 @@ import Text.JSON.Escape
 
 
 
-{-| Encode 'JSON' as a 'ByteString'. All strings are treated as UTF-8; ASCII
-    control characters are escaped and other byte formations are left as is.
+{-| Encode 'JSON' as a lazy 'Lazy.ByteString'. All strings are treated as
+    UTF-8; ASCII control characters are escaped and UTF-8 multi-char sequences
+    are simply passed through.
  -}
-encode                      ::  Style -> JSON -> ByteString
-encode style@Compact json    =  case json of
+encode                      ::  Style -> JSON -> Lazy.ByteString
+encode style                 =  Lazy.fromChunks . (:[]) . encode' style
+
+
+{-| Encode 'JSON' as a strict 'ByteString'. All strings are treated as UTF-8;
+    ASCII control characters are escaped and UTF-8 multi-char sequences are
+    simply passed through.
+ -}
+encode'                     ::  Style -> JSON -> ByteString
+encode' style@Compact json   =  case json of
   Object trie               ->  '{' `cons` pairs trie `snoc` '}'
   Array elems               ->  '[' `cons` elements elems `snoc` ']'
   String s                  ->  stringify s
@@ -30,10 +40,10 @@ encode style@Compact json    =  case json of
   Null                      ->  pack "null"
  where
   comcat                     =  intercalate (singleton ',')
-  elements                   =  comcat . fmap (encode style)
+  elements                   =  comcat . fmap (encode' style)
   pairs                      =  comcat . toListBy pair
    where
-    pair k v                 =  stringify k `snoc` ':' `append` encode style v
+    pair k v                 =  stringify k `snoc` ':' `append` encode' style v
 
 
 {-| Style of serialization. Compact is the only one that is implemented at
