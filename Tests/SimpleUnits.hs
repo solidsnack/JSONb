@@ -4,6 +4,7 @@
   #-}
 
 
+import Data.List (concatMap, nub)
 import Data.Ratio
 import Data.ByteString.Lazy.Char8 (pack)
 import qualified Data.ByteString.Char8 as Strict
@@ -24,14 +25,29 @@ object_test                  =  map succeed object_tests_that_should_succeed
     ]
 
 
-array_test                   =  map succeed array_tests_that_should_succeed
+prop_arrays_parse            =  forAll (elements tests) with_classifiers
  where
-  succeed (parse, should)    =  (parse, parse == (Right . JSONb.Array) should)
-  array_tests_that_should_succeed =
-    [ ( rt "[ 7, 6 ]", [JSONb.Number 7, JSONb.Number 6] )
-    , ( rt "[7,6]", [JSONb.Number 7, JSONb.Number 6] )
-    , ( rt "[7.6, 21]", [JSONb.Number 7.6, JSONb.Number 21.0] )
-    , ( rt "[22.0 ,7.6,]", [JSONb.Number 22, JSONb.Number 7.6] )
+  with_classifiers          ::  (String, [JSONb.JSON], [String]) -> Property
+  with_classifiers           =  compound (property . array_parse) classifiers
+   where
+    compound                 =  foldl (flip ($))
+  array_parse (s, a, info)   =  rt s == (Right . JSONb.Array) a
+  classifiers                =  (fmap classifier . nub . concatMap third) tests 
+   where
+    third (_,_,t)            =  t
+    classifier string p x    =  classify (string `elem` third x) string $ p x
+  tests =
+    [ ( "[ 7, 6 ]", JSONb.Number `fmap` [7, 6]
+      , ["excessive spacing", "integers"] )
+    , ( "[7,6]", JSONb.Number `fmap` [7, 6]
+      , ["compact spacing", "integers"] )
+    , ( "[7.6, 21]", JSONb.Number `fmap` [7.6, 21.0]
+      , ["normal spacing", "floating point"] )
+    , ( "[22.0 ,7.6,]", JSONb.Number `fmap` [22, 7.6]
+      , ["weird comma spacing", "extra comma", "floating point"] )
+    , ( "[\"22.0\" ,7.6,]"
+      , [(JSONb.String . Strict.pack) "22.0", JSONb.Number 7.6]
+      , ["weird comma spacing", "extra comma", "floating point", "string"] )
     ]
 
 
