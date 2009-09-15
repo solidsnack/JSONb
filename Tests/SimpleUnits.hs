@@ -47,6 +47,7 @@ prop_doubles n               =  case (rt . show) n of
 rt                           =  JSONb.decode . pack
 
 
+deepCheck = check (defaultConfig { configMaxTest = 10000})
 
 
 

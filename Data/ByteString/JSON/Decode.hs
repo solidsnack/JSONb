@@ -115,18 +115,19 @@ number                       =  Number <$> do
         integer_part        <-  digits
         return $ int integer_part
     ]
-  (e :: Int)                <-  exponent <|> (notFollowedBy oops >> pure 0)
-  return $ sign * n * 10^e
+  (exponent <*> pure (sign * n)) <|> (ended >> return (sign * n))
  where
   c ?> r                     =  char c >> pure r
   digits                     =  takeWhile1 isDigit
+  exponent                  ::  Parser (Rational -> Rational)
   exponent                   =  do
     char 'e' <|> char 'E'
-    sign                    <-  '-' ?> (-1) <|> '+' ?> 1 <|> pure 1
-    fmap ((sign*) . int) digits
-  oops                       =  satisfy oops'
+    op                      <-  '-' ?> (/) <|> '+' ?> (*) <|> pure (*)
+    (e :: Int)              <-  int <$> digits
+    pure (`op` (10^e)) 
+  ended                      =  notFollowedBy $ satisfy oops
    where
-    oops' c                  =  isAlphaNum c || elem c ".+-"
+    oops c                   =  isAlphaNum c || elem c ".+-"
 
 
 {-| Parse a JSON Boolean literal.
