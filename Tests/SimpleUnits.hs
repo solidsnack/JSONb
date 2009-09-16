@@ -66,7 +66,7 @@ prop_string_round_trip s     =  high . escapes $ case round_trip bytes of
     _                       ->  False
  where
   bytes                      =  UTF8.fromString s
-  round_trip                 =  JSONb.decode . JSONb.encode JSONb.Compact . JSONb.String
+  round_trip = JSONb.decode . JSONb.encode JSONb.Compact . JSONb.String
   high                       =  classify (any (> '\x7f') s) "above ASCII"
   escapes                    =  classify (any JSONb.escaped s) "escaped chars"
 
