@@ -5,6 +5,7 @@
 module JSONb
   ( Data.JSON.Simple.JSON(..)
   , Data.ByteString.JSON.Decode.decode
+  , Data.ByteString.JSON.Decode.break
   , Data.ByteString.JSON.Encode.encode
   , Data.ByteString.JSON.Encode.Style(..)
   ) where

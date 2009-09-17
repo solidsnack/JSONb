@@ -1,5 +1,9 @@
 
 
+{-# LANGUAGE StandaloneDeriving
+  #-}
+
+
 module Data.ByteString.JSON.Encode where
 
 

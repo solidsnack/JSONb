@@ -95,8 +95,6 @@ data Bound n where
 rt                           =  JSONb.decode . pack
 
 
-deep_check = check (defaultConfig { configMaxTest = 10000 } )
-
 
 structure_tests =
   [ ( "[ 7, 6 ]", (JSONb.Array . fmap JSONb.Number) [7, 6]
@@ -132,11 +130,5 @@ structure_tests =
           , JSONb.String (Strict.pack "e605_core_Bundled_8000231_R1") ) ]
     , ["object", "compact spacing", "strings"] )
   ]
---,"Version":"605","Item":{"Description":"tbiinternational Store This DVD is used. It was purchased at auction with a box full of other DVDs. I have not personally played it. The case has a few scratches, but the DVD appears in good condition. We have a number of Horror DVDs available and are happy to combine shipping.","ItemID":"150325461532","EndTime":"2009-02-18T20:08:22.000Z","ViewItemURLForNaturalSearch":"http://cgi.ebay.com/Zombie-Holocaust-2002-DVD_W0QQitemZ150325461532QQcategoryZ617QQcmdZViewItem","ListingType":"FixedPriceItem","Location":"Broomfield, Colorado","GalleryURL":"http://thumbs2.ebaystatic.com/pict/1503254615328080_1.jpg","PictureURL":["http://i20.ebayimg.com/01/c/05/b0/b8/f6_7.JPG"],"PrimaryCategoryID":"617","PrimaryCategoryName":"DVDs & Movies:DVD, HD DVD & Blu-ray","BidCount":0,"ConvertedCurrentPrice":{"Value":4.99,"CurrencyID":"USD"},"ListingStatus":"Completed","Title":"Zombie Holocaust (2002, DVD)","Country":"US","AutoPay":false}}
 
-
-instance Arbitrary Char where 
-  arbitrary                  =  (oneof . fmap choose)
-    [ ('\x00', '\x7f') , ('\x20', '\x7f') , (minBound, maxBound) ]
-  coarbitrary c              =  variant (fromEnum c `rem` 4)
 

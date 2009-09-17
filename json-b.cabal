@@ -15,6 +15,7 @@ description                   :
 cabal-version                 : >= 1.2
 build-type                    : Simple
 extra-source-files            : README
+                                Tests/SimpleUnits.hs
 
 
 library
@@ -36,4 +37,23 @@ library
                                 FlexibleInstances
                                 EmptyDataDecls
                                 GADTs
+
+
+executable                      json-schema
+  main-is                     : examples/JSONSchema.hs
+  build-depends               : base 
+                              , containers
+                              , utf8-string >= 0.3
+                              , bytestring >= 0.9
+                              , bytestringparser-temporary >= 0.4.1
+                              , bytestring-nums >= 0.3.1
+                              , bytestring-trie >= 0.1.4
+  extensions                  : StandaloneDeriving
+                                PatternGuards
+                                TypeSynonymInstances
+                                FlexibleInstances
+                                EmptyDataDecls
+                                GADTs
+
+
 

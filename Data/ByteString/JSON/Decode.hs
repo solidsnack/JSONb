@@ -32,10 +32,20 @@ import Data.JSON.Simple
 
 {-| Interpret a 'ByteString' as any JSON literal.
  -}
-decode :: ByteString -> Either (ByteString, ParseError) JSON
+decode :: ByteString -> Either (ParseError, ByteString) JSON
 decode bytes                 =  case Attoparsec.parse json bytes of
-  (remainder, Left e)       ->  Left (remainder, e)
-  (_, Right structure)      ->  Right structure
+  (remainder, Left e)       ->  Left (e, remainder)
+  (r, Right j)              ->  Right j
+
+
+{-| Split out the first parseable JSON literal from the input, returning
+    the result of the attempt along with the remainder of the input or the
+    whole input if not parseable item was discovered.
+ -}
+break :: ByteString -> (Either ParseError JSON, ByteString)
+break bytes                  =  case Attoparsec.parse json bytes of
+  (_, Left e)               ->  (Left e, bytes)
+  (remainder, result)       ->  (result, remainder)
 
 
 {-| Tries to parse any JSON literal.
