@@ -4,7 +4,7 @@ category                      : Text
 license                       : BSD3
 license-file                  : LICENSE
 author                        : Jason Dusek
-maintainer                    : jason.dusek@gmail.com
+maintainer                    : jsonb@solidsnack.be 
 homepage                      : http://github.com/jsnx/JSONb/
 synopsis                      : JSON parser that uses byte strings.
 description                   :
