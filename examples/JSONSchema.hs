@@ -31,7 +31,7 @@ import qualified Data.JSON.Schema.Display as Schema
 main                         =  interact (display . schemas . progressive)
 
 
-display                      =  unlines . fmap Schema.counted_bytes
+display                      =  unlines . fmap Schema.bytes
 
 
 schemas :: [JSONb.JSON] -> [(Schema.OneMany, Schema.Schema Schema.OneMany)]
