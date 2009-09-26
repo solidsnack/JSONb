@@ -1,14 +1,59 @@
 
 
+{-# LANGUAGE StandaloneDeriving
+  #-}
+
+
 module Data.JSON.Schema where
 
 
-import Data.Trie as Trie
+import Data.Ord
+import Data.Word
 import Data.Set as Set
 
+import Data.Trie as Trie
+
+import qualified Data.JSON.Simple as Simple
 
 
 
+
+{-
+
+  JSON Schemas:
+
+    document               ::=  array
+
+    element                ::=  num | str | null | bool | object | array
+
+    object                 ::=  "{" Set(element) "}"
+
+    array                  ::=  "[" List(element) "]"
+
+    num                    ::=  "num"
+    str                    ::=  "str"
+    null                   ::=  "null"
+    bool                   ::=  "bool"
+
+ -}
+
+
+
+
+{-| The type of JSON schemas. We treat the atomic types simply whereas objects
+    and arrays are treated specially.
+
+    Objects are treated as maps of keys to sets of schema types. Say a certain
+    type of object sometimes has a string at a certain key and sometimes has a
+    null at that key; we should merge them and say the schema of that key is a
+    union of string and null.
+
+    Arrays admit measure in the sense of how many elements there are of a
+    certain kind. We support three measures at present: any, one or more and
+    individual counts. We expect the "any" measure to prevail practice. Arrays
+    are also ordered; so one can distinguish an array that interleaves strings
+    and ints from one that is all strings and then all ints.
+ -}
 data Schema counter
   = Num
   | Str
@@ -16,32 +61,102 @@ data Schema counter
   | Null
   | Obj (Props counter)
   | Arr (Elements counter)
+deriving instance (Eq counter) => Eq (Schema counter)
 deriving instance (Ord counter) => Ord (Schema counter)
 
+
+{-| Determine a schema for one JSON data item.
+ -}
+schema :: (Counter counter) => Simple.JSON -> Schema counter
+schema json                  =  case json of
+  Simple.Object trie        ->  Obj $ props trie
+  Simple.Array list         ->  Arr . Elements $ schemas list
+  Simple.String _           ->  Str
+  Simple.Number _           ->  Num
+  Simple.Boolean _          ->  Bool
+  Simple.Null               ->  Null
+
+
+props :: (Counter counter) => Trie.Trie Simple.JSON -> Props counter
+props                        =  Props . fmap (Set.singleton . schema)
+
+
+{-| Develop a schema for a list of JSON data, collating schemas according to
+    the measure, a well-ordered semigroup. 
+ -}
+schemas :: (Counter counter) => [Simple.JSON] -> [(counter, Schema counter)] 
+schemas json                 =  collate [ (bottom, schema e) | e <- json ]
+
+
+collate
+ :: (Counter counter)
+ => [(counter, Schema counter)] 
+ -> [(counter, Schema counter)] 
+collate                      =  reverse . foldr c []
+ where
+  c s []                     =  [s]
+  c (c0, Obj p0) ((c1, Obj p1):t)
+    | match p0 p1            =  (c0 `plus` c1, Obj $ merge p0 p1):t
+    | otherwise              =  (c0, Obj p0):(c1, Obj p1):t
+  c (c0, schema0) ((c1, schema1):t)
+    | schema0 == schema1     =  (c0 `plus` c1, schema0):t
+    | otherwise              =  (c0, schema0):(c1, schema1):t
+
+
+
+
 data Props counter           =  Props (Trie.Trie (Set.Set (Schema counter)))
-deriving instance (Show counter) => Show (Props counter)
+deriving instance (Eq counter) => Eq (Props counter)
+instance (Ord counter) => Ord (Props counter) where
+  compare (Props trie0) (Props trie1) = comparing Trie.toList trie0 trie1
+
+merge
+ :: (Counter counter)
+ => Props counter
+ -> Props counter
+ -> Props counter
+merge (Props a) (Props b)    =  Props $ Trie.mergeBy ((Just .) . Set.union) a b
+
+match
+ :: (Counter counter)
+ => Props counter
+ -> Props counter
+ -> Bool
+match (Props a) (Props b)    =  Trie.keys a == Trie.keys b
+
 
 data Elements counter        =  Elements [(counter, Schema counter)]
-deriving instance (Show counter) => Show (Elements counter)
+deriving instance (Eq counter) => Eq (Elements counter)
+deriving instance (Ord counter) => Ord (Elements counter)
 
 
 data OneMany                 =  One | Many
+deriving instance Eq OneMany
 deriving instance Ord OneMany
+deriving instance Show OneMany
 
 
-class (Ord t) => WellOrderedSemigroup t where
+
+
+{-| A well-ordered semigroup has a minimal element and an associative
+    operation. These are used to provide measures for schema. At present, we
+    allow three measures: whether there is one or more of a schema (measured
+    with '()'), whether there is one or more than one of an item (measured with
+    'OneMany') and positive counts of items (measured with 'Word').
+ -}
+class (Eq t, Show t, Ord t) => Counter t where
   bottom                    ::  t
   plus                      ::  t -> t -> t
 
-instance WellOrderedSemigroup OneMany where
+instance Counter OneMany where
   bottom                     =  One
   plus _ _                   =  Many
 
-instance WellOrderedSemigroup Word where
+instance Counter Word where
   bottom                     =  1
   plus                       =  (+)
 
-instance WellOrderedSemigroup () where
+instance Counter () where
   bottom                     =  ()
   plus _ _                   =  ()
 

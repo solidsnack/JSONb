@@ -12,6 +12,7 @@ module JSONb
 
 
 import Data.JSON.Simple
+import Data.JSON.Schema
 import Data.ByteString.JSON.Decode
 import Data.ByteString.JSON.Encode
 
