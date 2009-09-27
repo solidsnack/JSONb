@@ -91,7 +91,9 @@ schemas json                 =  foldr collate []
 
 
 {-| Collate a list of counted schemas. Alike counted schemas that are adjacent
-    are replaced by a counted schema with an incremented counter.
+    are replaced by a counted schema with an incremented counter. This
+    operation is mutually recursive with 'merge', in order to merge comaptible
+    object definitions before collating.
  -}
 collate
  :: (Counter counter, Counter counter')
@@ -105,7 +107,7 @@ collate (c0, Obj p0) ((c1, Obj p1):t)
 collate (c0, schema0) ((c1, schema1):t)
   | schema0 == schema1       =  (c0 `plus` c1, schema0):t
   | otherwise                =  (c0, schema0):(c1, schema1):t
---  Note that this is mutually recursive with merge!
+
 
 
 
@@ -114,6 +116,9 @@ deriving instance (Eq counter) => Eq (Props counter)
 instance (Ord counter) => Ord (Props counter) where
   compare (Props trie0) (Props trie1) = comparing Trie.toList trie0 trie1
 
+{-| Merge two property sets. This operation is mutually recursive with our
+    'collate' and relies on polymorphic recusion in 'collate'.
+ -}
 merge
  :: (Counter counter)
  => Props counter
