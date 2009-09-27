@@ -98,10 +98,10 @@ collate
 -- => (counter, Schema counter)
 -- -> [(counter, Schema counter)]
 -- -> [(counter, Schema counter)]
- :: (Counter c, Counter c')
- => (c, Schema c')
- -> [(c, Schema c')]
- -> [(c, Schema c')]
+ :: (Counter counter, Counter counter')
+ => (counter, Schema counter')
+ -> [(counter, Schema counter')]
+ -> [(counter, Schema counter')]
 collate s []                 =  [s]
 collate (c0, Obj p0) ((c1, Obj p1):t)
   | match p0 p1              =  (c0 `plus` c1, Obj $ merge p0 p1):t
