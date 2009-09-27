@@ -9,6 +9,7 @@ module Data.JSON.Schema where
 
 import Data.Ord
 import Data.Word
+import Data.List (permutations)
 import Data.Set as Set
 
 import Data.Trie as Trie
@@ -85,23 +86,30 @@ props                        =  Props . fmap (Set.singleton . schema)
     the measure, a well-ordered semigroup. 
  -}
 schemas :: (Counter counter) => [Simple.JSON] -> [(counter, Schema counter)] 
-schemas json                 =  collate [ (bottom, schema e) | e <- json ]
+schemas json                 =  foldr collate []
+                                  [ (bottom, schema e) | e <- json ]
 
 
+{-| Collate a list of counted schemas. Alike counted schemas that are adjacent
+    are replaced by a counted schema with an incremented counter.
+ -}
 collate
- :: (Counter counter)
- => [(counter, Schema counter)] 
- -> [(counter, Schema counter)] 
-collate                      =  reverse . foldr c []
- where
-  c s []                     =  [s]
-  c (c0, Obj p0) ((c1, Obj p1):t)
-    | match p0 p1            =  (c0 `plus` c1, Obj $ merge p0 p1):t
-    | otherwise              =  (c0, Obj p0):(c1, Obj p1):t
-  c (c0, schema0) ((c1, schema1):t)
-    | schema0 == schema1     =  (c0 `plus` c1, schema0):t
-    | otherwise              =  (c0, schema0):(c1, schema1):t
-
+-- :: (Counter counter)
+-- => (counter, Schema counter)
+-- -> [(counter, Schema counter)]
+-- -> [(counter, Schema counter)]
+ :: (Counter c, Counter c')
+ => (c, Schema c')
+ -> [(c, Schema c')]
+ -> [(c, Schema c')]
+collate s []                 =  [s]
+collate (c0, Obj p0) ((c1, Obj p1):t)
+  | match p0 p1              =  (c0 `plus` c1, Obj $ merge p0 p1):t
+  | otherwise                =  (c0, Obj p0):(c1, Obj p1):t
+collate (c0, schema0) ((c1, schema1):t)
+  | schema0 == schema1       =  (c0 `plus` c1, schema0):t
+  | otherwise                =  (c0, schema0):(c1, schema1):t
+--  Note that this is mutually recursive with merge!
 
 
 
@@ -115,7 +123,24 @@ merge
  => Props counter
  -> Props counter
  -> Props counter
-merge (Props a) (Props b)    =  Props $ Trie.mergeBy ((Just .) . Set.union) a b
+merge (Props a) (Props b)    =  Props $ Trie.mergeBy ((Just .) . merge') a b
+ where
+  merge'                     =  ((count_in . merge'' . count_out) .) . Set.union
+   where
+    --  We use the unary (existence) counter so that it collates set-like. 
+    count_out                =  fmap ((,) ()) . Set.toList
+    count_in                 =  Set.fromList . fmap snd
+  merge'' [   ]              =  []
+  merge'' (h:t)              =  foldr collate' t (h:t)
+   where
+    --  We expect only very small sets of schemas.
+    collate' schema          =  shortest . fmap (collate schema) . permutations
+  shortest [   ]             =  []
+  shortest (h:t)             =  foldr shortest' h t
+   where
+    shortest' x h
+      | length h < length x  =  h
+      | otherwise            =  x
 
 match
  :: (Counter counter)
