@@ -16,8 +16,9 @@ import Prelude hiding
   , concat
   )
 import Data.Ord
+import Data.List (foldl1')
 import Data.Word
-import Data.ByteString.Lazy.Char8 hiding (any)
+import Data.ByteString.Lazy.Char8 hiding (any, foldl1')
 import qualified Data.Set as Set
 
 import qualified Data.Trie as Trie
@@ -39,20 +40,22 @@ instance (Display counter) => Display (Schema counter) where
     Str                     ->  pack "str"
     Bool                    ->  pack "bool"
     Null                    ->  pack "null"
-    Obj (Props trie)        ->  pack "{ " `append` f trie `append` pack " }"
+    Obj (Props trie)        ->  pack "{ " `append` f trie `append` pack "\n}"
      where
+      m                      =  longest_key_len trie
       f                      =  dent 2 . unlines . Trie.toListBy prop_bytes
        where
-        prop_bytes k set     =  k' `append` pack ": " `append` join set'
+        prop_bytes k set     =  k' `append` colon `append` join set'
          where
+          colon              =  take (m - length k') space `append` pack " : "
           k'                 =  fromChunks [k]
           k''                =  length k'
-          bar                =  '\n' `cons` take k'' space `append` pack "| "
+          bar                =  '\n' `cons` take m space `append` pack " | "
           set'               =  (fmap bytes . Set.toList) set
           join               =  if must_be_multiline 3 set'
-                                  then  intercalate bar . fmap (dent (k'' + 2))
+                                  then  intercalate bar . fmap (dent (m + 3))
                                   else  intercalate (pack " | ")
-    Arr (Elements list)     ->  pack "[ " `append` inner `append` pack " ]"
+    Arr (Elements list)     ->  pack "[ " `append` inner `append` pack "\n]"
      where
       inner                  =  if must_be_multiline 1 list'
                                   then  intercalate (pack "\n  ") list'
@@ -71,6 +74,15 @@ too_long s                   =  (> len + s) . sum . fmap ((+s) . length)
 dent n                       =  intercalate ('\n' `cons` take n space) . lines
 
 space                        =  repeat ' '
+
+{-| Warning -- does not work on empty tries. 
+ -}
+longest_key_len              =  length . foldl1' longest . lazify . Trie.keys
+ where
+  lazify                     =  fmap $ fromChunks . (:[])
+  longest x h
+    | length h > length x    =  h
+    | otherwise              =  x
 
 
 instance Display () where
