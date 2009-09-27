@@ -94,10 +94,6 @@ schemas json                 =  foldr collate []
     are replaced by a counted schema with an incremented counter.
  -}
 collate
--- :: (Counter counter)
--- => (counter, Schema counter)
--- -> [(counter, Schema counter)]
--- -> [(counter, Schema counter)]
  :: (Counter counter, Counter counter')
  => (counter, Schema counter')
  -> [(counter, Schema counter')]
