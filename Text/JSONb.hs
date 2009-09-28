@@ -2,7 +2,6 @@
 
 {-| ByteString parser for a simple, monomorphic JSON datatype.
  -}
-
 module Text.JSONb
   ( Text.JSONb.Simple.JSON(..)
   , Text.JSONb.Decode.decode
