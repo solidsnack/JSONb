@@ -28,9 +28,6 @@ import qualified Data.Set as Set
 import qualified Data.Trie as Trie
 
 import qualified Text.JSONb as JSONb
-import qualified Text.JSONb as JSONb
-import qualified Text.JSONb.Schema as Schema
-import qualified Text.JSONb.Schema.Display as Schema
 
 
 
@@ -75,10 +72,10 @@ help                         =  (unlines . fmap pack)
 main                         =  do
   args                      <-  getArgs
   case args of
-    []                      ->  op (Schema.schemas :: Counting Schema.OneMany)
-    ["--any"]               ->  op (Schema.schemas :: Counting ())
-    ["--one-many"]          ->  op (Schema.schemas :: Counting Schema.OneMany)
-    ["--count"]             ->  op (Schema.schemas :: Counting Word)
+    []                      ->  op (JSONb.schemas :: Counting JSONb.OneMany)
+    ["--any"]               ->  op (JSONb.schemas :: Counting ())
+    ["--one-many"]          ->  op (JSONb.schemas :: Counting JSONb.OneMany)
+    ["--count"]             ->  op (JSONb.schemas :: Counting Word)
     ["-h"]                  ->  hPutStr stdout help
     ["-?"]                  ->  hPutStr stdout help
     ["--help"]              ->  hPutStr stdout help
@@ -90,7 +87,7 @@ main                         =  do
   op schemas                 =  interact (display . schemas . progressive)
 
 
-display                      =  unlines . fmap Schema.bytes
+display                      =  unlines . fmap JSONb.bytes
 
 
 progressive                  =  progressive_parse' []
@@ -102,6 +99,6 @@ progressive                  =  progressive_parse' []
       (Right piece, rem)    ->  progressive_parse' (piece:acc) rem
 
 
-type Counting c              =  [JSONb.JSON] -> [(c, Schema.Schema c)]
+type Counting c              =  [JSONb.JSON] -> [(c, JSONb.Schema c)]
 
 

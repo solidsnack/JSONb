@@ -11,6 +11,7 @@ module Text.JSONb
   , Text.JSONb.Schema.Schema()
   , Text.JSONb.Schema.schema
   , Text.JSONb.Schema.schemas
+  , Text.JSONb.Schema.OneMany(..)
   , Text.JSONb.Schema.Display.Display(..)
   , Text.JSON.Escape.Escape(..)
   , Text.JSON.Escape.escaped

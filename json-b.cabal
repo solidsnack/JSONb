@@ -53,4 +53,3 @@ executable                      json-schema
                                 RelaxedPolyRec
                                 NoMonomorphismRestriction
 
-
