@@ -53,7 +53,7 @@ encode' style@Compact json   =  case json of
 {-| Style of serialization. Compact is the only one that is implemented at
     present.
  -}
-data Style                   =  Compact -- | LightSpaces | Indented
+data Style                   =  Compact -- for later: LightSpaces | Indented
 deriving instance Show Style
 deriving instance Eq Style
 
