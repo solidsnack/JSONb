@@ -14,7 +14,7 @@ description                   :
   the examples subdir) for an example of how to use the parsing tools.
 
 
-cabal-version                 : >= 1.2
+cabal-version                 : >= 1.2.3
 build-type                    : Simple
 extra-source-files            : README
                                 test/SimpleUnits.hs
