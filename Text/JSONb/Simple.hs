@@ -7,7 +7,9 @@
 
 {-| JSON datatype definition.
  -}
-module Data.JSON.Simple where
+
+
+module Text.JSONb.Simple where
 
 
 import Data.ByteString

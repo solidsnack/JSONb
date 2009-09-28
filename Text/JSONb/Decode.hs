@@ -8,7 +8,8 @@
 {-| Parse UTF-8 JSON into native Haskell types.
  -}
 
-module Data.ByteString.JSON.Decode where
+
+module Text.JSONb.Decode where
 
 
 import Data.Char
@@ -24,7 +25,7 @@ import Data.ParserCombinators.Attoparsec.Char8 hiding (string)
 import qualified Data.ParserCombinators.Attoparsec.Char8 as Attoparsec
 import Data.ByteString.Nums.Careless
 
-import Data.JSON.Simple
+import Text.JSONb.Simple
 
 
 

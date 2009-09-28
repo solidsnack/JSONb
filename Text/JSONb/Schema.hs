@@ -5,7 +5,7 @@
   #-}
 
 
-module Data.JSON.Schema where
+module Text.JSONb.Schema where
 
 
 import Data.Ord
@@ -15,7 +15,7 @@ import Data.Set as Set
 
 import Data.Trie as Trie
 
-import qualified Data.JSON.Simple as Simple
+import qualified Text.JSONb.Simple as Simple
 
 
 

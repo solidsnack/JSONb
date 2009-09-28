@@ -4,7 +4,7 @@
   #-}
 
 
-module Data.ByteString.JSON.Encode where
+module Text.JSONb.Encode where
 
 
 import Data.Ratio
@@ -13,7 +13,7 @@ import qualified Data.ByteString.Lazy as Lazy
 
 import Data.Trie hiding (singleton)
 
-import Data.JSON.Simple
+import Text.JSONb.Simple
 import Text.JSON.Escape
 
 

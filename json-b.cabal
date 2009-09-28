@@ -26,12 +26,12 @@ library
                               , bytestringparser-temporary >= 0.4.1
                               , bytestring-nums >= 0.3.1
                               , bytestring-trie >= 0.1.4
-  exposed-modules             : JSONb
-                                Data.JSON.Simple
-                                Data.JSON.Schema
-                                Data.JSON.Schema.Display
-                                Data.ByteString.JSON.Decode
-                                Data.ByteString.JSON.Encode
+  exposed-modules             : Text.JSONb
+                                Text.JSONb.Simple
+                                Text.JSONb.Schema
+                                Text.JSONb.Schema.Display
+                                Text.JSONb.Decode
+                                Text.JSONb.Encode
                                 Text.JSON.Escape
   extensions                  : StandaloneDeriving
                                 FlexibleInstances

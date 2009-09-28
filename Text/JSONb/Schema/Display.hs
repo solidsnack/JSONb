@@ -1,6 +1,6 @@
 
 
-module Data.JSON.Schema.Display where
+module Text.JSONb.Schema.Display where
 
 
 import Prelude hiding
@@ -23,7 +23,7 @@ import qualified Data.Set as Set
 
 import qualified Data.Trie as Trie
 
-import Data.JSON.Schema
+import Text.JSONb.Schema
 
 
 

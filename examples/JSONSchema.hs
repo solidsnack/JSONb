@@ -27,9 +27,10 @@ import qualified Data.Set as Set
 
 import qualified Data.Trie as Trie
 
-import qualified JSONb
-import qualified Data.JSON.Schema as Schema
-import qualified Data.JSON.Schema.Display as Schema
+import qualified Text.JSONb as JSONb
+import qualified Text.JSONb as JSONb
+import qualified Text.JSONb.Schema as Schema
+import qualified Text.JSONb.Schema.Display as Schema
 
 
 
@@ -86,7 +87,6 @@ main                         =  do
       hPutStr stderr help
       exitFailure
  where
-  --op                        ::  Counting c -> IO ()
   op schemas                 =  interact (display . schemas . progressive)
 
 

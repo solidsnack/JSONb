@@ -13,8 +13,7 @@ import Test.QuickCheck
 import Data.Trie
 import qualified Data.ByteString.UTF8 as UTF8
 
-import qualified JSONb
-import qualified Text.JSON.Escape as JSONb
+import qualified Text.JSONb as JSONb
 
 
 
