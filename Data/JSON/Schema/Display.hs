@@ -55,13 +55,12 @@ instance (Display counter) => Display (Schema counter) where
           join               =  if must_be_multiline 3 set'
                                   then  intercalate bar . fmap (dent (m + 3))
                                   else  intercalate (pack " | ")
-    Arr (Elements list)     ->  pack "[ " `append` inner `append` pack "\n]"
+    Arr (Elements list)     ->  if must_be_multiline 1 list'
+      then  pack "[ " `append` intercalate nl list' `append` pack "\n]"
+      else  pack "[ " `append` intercalate (pack " ") list' `append` pack " ]"
      where
-      inner                  =  if must_be_multiline 1 list'
-                                  then  intercalate (pack "\n  ") list'
-                                  else  intercalate (pack " ") list'
-                                 where
-                                  list'        =  fmap bytes list
+      nl                     =  pack "\n  "
+      list'                  =  fmap bytes list
 
 len                          =  64
 
