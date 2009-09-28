@@ -8,7 +8,7 @@ module Text.JSONb
   , Text.JSONb.Decode.break
   , Text.JSONb.Encode.Style(..)
   , Text.JSONb.Encode.encode
-  , Text.JSONb.Schema.Schema()
+  , Text.JSONb.Schema.Schema
   , Text.JSONb.Schema.schema
   , Text.JSONb.Schema.schemas
   , Text.JSONb.Schema.OneMany(..)
