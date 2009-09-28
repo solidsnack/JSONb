@@ -34,11 +34,10 @@ library
                                 Data.ByteString.JSON.Encode
                                 Text.JSON.Escape
   extensions                  : StandaloneDeriving
-                                PatternGuards
-                                TypeSynonymInstances
                                 FlexibleInstances
-                                EmptyDataDecls
-                                GADTs
+                                RelaxedPolyRec
+                                ScopedTypeVariables
+                                ParallelListComp
 
 
 executable                      json-schema
@@ -50,12 +49,8 @@ executable                      json-schema
                               , bytestringparser-temporary >= 0.4.1
                               , bytestring-nums >= 0.3.1
                               , bytestring-trie >= 0.1.4
-  extensions                  : StandaloneDeriving
-                                PatternGuards
-                                TypeSynonymInstances
-                                FlexibleInstances
-                                EmptyDataDecls
-                                GADTs
-
+  extensions                  : FlexibleInstances
+                                RelaxedPolyRec
+                                NoMonomorphismRestriction
 
 

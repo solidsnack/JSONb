@@ -1,6 +1,7 @@
 
 
 {-# LANGUAGE StandaloneDeriving
+           , RelaxedPolyRec
   #-}
 
 

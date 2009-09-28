@@ -1,6 +1,5 @@
 
 
-
 {-# LANGUAGE ScopedTypeVariables
            , ParallelListComp
   #-}
