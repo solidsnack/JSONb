@@ -16,7 +16,8 @@ import qualified Data.ByteString.Char8 as Strict
 
 
 {-| Class of JSON escapable text. The solidus (@/@) is always escaped, as are
-    all ASCII control characters. Non-ASCII control characters 
+    all ASCII control characters. Non-ASCII control characters and Unicode
+    printable characters above ASCII are left as is.
  -}
 class Escape t where
   escape                    ::  t -> t
