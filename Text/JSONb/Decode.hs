@@ -62,7 +62,10 @@ object                      ::  Parser JSON
 object                       =  do
   char '{'
   whitespace
-  Object . Trie.fromListS <$> properties []
+  Object . Trie.fromListS <$> choice
+    [ whitespace >> char '}' >> return []
+    , properties []
+    ]
  where
   properties acc             =  do
     key                     <-  string_literal
@@ -86,7 +89,10 @@ object                       =  do
 array                       ::  Parser JSON
 array                        =  do
   char '['
-  Array <$> elements []
+  Array <$> choice
+    [ whitespace >> char ']' >> return []
+    , elements []
+    ]
  where
   elements acc               =  do
     something               <-  json

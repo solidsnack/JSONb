@@ -98,6 +98,10 @@ rt                           =  JSONb.decode . pack
 structure_tests =
   [ ( "[ 7, 6 ]", (JSONb.Array . fmap JSONb.Number) [7, 6]
     , ["array", "excessive spacing", "integers"] )
+  , ( "[]", JSONb.Array []
+    , ["array", "compact spacing", "empty"] )
+  , ( "[ ]", JSONb.Array []
+    , ["array", "normal spacing", "empty"] )
   , ( "[7,6]", (JSONb.Array . fmap JSONb.Number) [7, 6]
     , ["array", "compact spacing", "integers"] )
   , ( "[7.6, 21]", (JSONb.Array . fmap JSONb.Number) [7.6, 21.0]
@@ -122,6 +126,10 @@ structure_tests =
         , ( Strict.pack "Build"
           , JSONb.String (Strict.pack "e605_core_Bundled_8000231_R1") ) ]
     , ["object", "newlines", "strings"] )
+  , ( "{}", JSONb.Object empty
+    , ["object", "compact spacing", "empty"] )
+  , ( "{ }", JSONb.Object empty
+    , ["object", "normal spacing", "empty"] )
   , ( "{\"Ack\":\"Success\",\"Build\":\"e605_core_Bundled_8000231_R1\"}"
     , (JSONb.Object . fromList)
         [ (Strict.pack "Ack", JSONb.String (Strict.pack "Success"))
