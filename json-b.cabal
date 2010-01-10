@@ -5,7 +5,7 @@ license                       : BSD3
 license-file                  : LICENSE
 author                        : Jason Dusek
 maintainer                    : jsonb@solidsnack.be 
-homepage                      : http://github.com/jsnx/JSONb/
+homepage                      : http://github.com/solidsnack/JSONb/
 synopsis                      : JSON parser that uses byte strings.
 description                   :
   This parser consumes lazy ByteStrings to produce JSON in a simple, efficient
