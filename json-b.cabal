@@ -1,5 +1,5 @@
 name                          : json-b
-version                       : 0.0.4
+version                       : 0.0.5
 category                      : Text
 license                       : BSD3
 license-file                  : LICENSE
@@ -25,7 +25,7 @@ library
                               , containers
                               , utf8-string >= 0.3
                               , bytestring >= 0.9
-                              , bytestringparser-temporary >= 0.4.1
+                              , attoparsec >= 0.8 && < 0.9
                               , bytestring-nums >= 0.3.1
                               , bytestring-trie >= 0.1.4
   exposed-modules             : Text.JSONb
@@ -48,7 +48,7 @@ executable                      json-schema
                               , containers
                               , utf8-string >= 0.3
                               , bytestring >= 0.9
-                              , bytestringparser-temporary >= 0.4.1
+                              , attoparsec >= 0.8 && < 0.9
                               , bytestring-nums >= 0.3.1
                               , bytestring-trie >= 0.1.4
   extensions                  : FlexibleInstances
