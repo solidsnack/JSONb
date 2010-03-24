@@ -14,15 +14,15 @@ module Text.JSONb.Decode where
 
 import Data.Char
 import Prelude hiding (null, last, takeWhile)
-import qualified Data.ByteString as ByteString.Strict
-import Data.ByteString.Lazy.Char8
-  hiding (reverse, null, takeWhile, elem, concatMap)
+import Data.ByteString (append, empty, ByteString)
+import Data.ByteString.Char8 (snoc, cons, pack)
 import Control.Applicative hiding (empty)
 
-import qualified Data.ByteString.Lazy.UTF8 as UTF8
+import qualified Data.ByteString.UTF8 as UTF8
 import qualified Data.Trie.Convenience as Trie
-import Data.ParserCombinators.Attoparsec.Char8 hiding (string)
-import qualified Data.ParserCombinators.Attoparsec.Char8 as Attoparsec
+import Data.Attoparsec (eitherResult)
+import Data.Attoparsec.Char8 hiding (string, isDigit)
+import qualified Data.Attoparsec.Char8 as Attoparsec
 import Data.ByteString.Nums.Careless
 
 import Text.JSONb.Simple
@@ -32,20 +32,19 @@ import Text.JSONb.Simple
 
 {-| Interpret a 'ByteString' as any JSON literal.
  -}
-decode :: ByteString -> Either (ParseError, ByteString) JSON
-decode bytes                 =  case Attoparsec.parse json bytes of
-  (remainder, Left e)       ->  Left (e, remainder)
-  (r, Right j)              ->  Right j
+decode                      ::  ByteString -> Either String JSON
+decode bytes                 =  (eitherResult . Attoparsec.parse) json bytes
 
 
 {-| Split out the first parseable JSON literal from the input, returning
     the result of the attempt along with the remainder of the input or the
-    whole input if not parseable item was discovered.
+    whole input if no parseable item was discovered.
  -}
-break :: ByteString -> (Either ParseError JSON, ByteString)
+break                       ::  ByteString -> (Either String JSON, ByteString)
 break bytes                  =  case Attoparsec.parse json bytes of
-  (_, Left e)               ->  (Left e, bytes)
-  (remainder, result)       ->  (result, remainder)
+  Done remainder result     ->  (result, remainder)
+  Fail _ _ s _              ->  (Left s, bytes)
+  Partial _                 ->  (Left "Partial", bytes)
 
 
 {-| Tries to parse any JSON literal.
@@ -74,7 +73,7 @@ object                       =  do
     something               <-  json
     whitespace
     let
-      acc'                   =  (strictify key, something) : acc
+      acc'                   =  (key, something) : acc
     choice
       [ char ',' >> whitespace >> choice
           [ char '}' >> return acc'
@@ -109,7 +108,7 @@ array                        =  do
 {-| Parses a string literal, unescaping as it goes.
  -}
 string                      ::  Parser JSON
-string                       =  String . strictify <$> string_literal
+string                       =  String <$> string_literal
 
 
 {-| Parses a numeric literal to a @Rational@.
@@ -141,7 +140,7 @@ number                       =  Number <$> do
     op                      <-  '-' ?> (/) <|> '+' ?> (*) <|> pure (*)
     (e :: Int)              <-  int <$> digits
     pure (`op` (10^e)) 
-  ended                      =  notFollowedBy $ satisfy oops
+  ended                      =  {- notFollowedBy $ -} satisfy oops >> return ()
    where
     oops c                   =  isAlphaNum c || elem c ".+-"
 
@@ -150,15 +149,15 @@ number                       =  Number <$> do
  -}
 boolean                     ::  Parser JSON
 boolean                      =  Boolean <$> choice
-  [ Attoparsec.string "true" >> return True
-  , Attoparsec.string "false" >> return False
+  [ s_as_b "true" >> return True
+  , s_as_b "false" >> return False
   ]
 
 
 {-| Parse a JSON null literal.
  -}
 null                        ::  Parser JSON
-null                         =  Attoparsec.string "null" >> return Null
+null                         =  s_as_b "null" >> return Null
 
 
 
@@ -211,9 +210,5 @@ string_literal               =  char '"' >> recurse empty
                                                ,  (-87, ['a'..'f'])  ]
 
 
-{-| Turn a lazy 'ByteString' in to a strict 'ByteString.Strict.ByteString'.
- -}
-strictify                   ::  ByteString -> ByteString.Strict.ByteString
-strictify                    =  ByteString.Strict.concat . toChunks
-
+s_as_b s                     =  Attoparsec.string (pack s)
 
