@@ -33,7 +33,7 @@ import Text.JSONb.Simple
 {-| Interpret a 'ByteString' as any JSON literal.
  -}
 decode                      ::  ByteString -> Either String JSON
-decode bytes                 =  (eitherResult . Attoparsec.parse) json bytes
+decode bytes                 =  (eitherResult . Attoparsec.parse json) bytes
 
 
 {-| Split out the first parseable JSON literal from the input, returning
@@ -42,8 +42,8 @@ decode bytes                 =  (eitherResult . Attoparsec.parse) json bytes
  -}
 break                       ::  ByteString -> (Either String JSON, ByteString)
 break bytes                  =  case Attoparsec.parse json bytes of
-  Done remainder result     ->  (result, remainder)
-  Fail _ _ s _              ->  (Left s, bytes)
+  Done remainder result     ->  (Right result, remainder)
+  Fail _ _ s                ->  (Left s, bytes)
   Partial _                 ->  (Left "Partial", bytes)
 
 
