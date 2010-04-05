@@ -13,8 +13,9 @@ module Text.JSONb.Decode where
 
 
 import Data.Char
-import Prelude hiding (null, last, takeWhile)
-import Data.ByteString (append, empty, ByteString)
+import Data.Ratio ((%))
+import Prelude hiding (length, null, last, takeWhile)
+import Data.ByteString (length, append, empty, ByteString)
 import Data.ByteString.Char8 (snoc, cons, pack)
 import Control.Applicative hiding (empty)
 
@@ -115,42 +116,30 @@ string                       =  String <$> string_literal
  -}
 number                      ::  Parser JSON
 number                       =  Number <$> do
-  (sign :: Rational)        <-  '-' ?> (-1) <|> pure 1
-  n                         <-  choice
-    [ do
-        integer_part        <-  digits
-        char '.'
-        fractional_part     <-  digits
-        return $ float (integer_part `snoc` '.' `append` fractional_part)
-    , do
-        char '.'
-        fractional_part     <-  digits
-        return $ float ('.' `cons` fractional_part)
-    , do
-        integer_part        <-  digits
-        return $ int integer_part
-    ]
-  (exponent <*> pure (sign * n)) <|> (ended >> return (sign * n))
+  (sign :: Rational)        <-  (char '-' >> pure (-1)) <|> pure 1
+  i                         <-  just_zero <|> positive_number
+  f                         <-  option 0 fractional
+  e                         <-  option 0 (e >> signed decimal)
+  return (sign * (i + f) * (10^e))
  where
-  c ?> r                     =  char c >> pure r
-  digits                     =  takeWhile1 isDigit
-  exponent                  ::  Parser (Rational -> Rational)
-  exponent                   =  do
-    char 'e' <|> char 'E'
-    op                      <-  '-' ?> (/) <|> '+' ?> (*) <|> pure (*)
-    (e :: Int)              <-  int <$> digits
-    pure (`op` (10^e)) 
-  ended                      =  {- notFollowedBy $ -} satisfy oops >> return ()
+  fractional                 =  do
+    c                       <-  char '.'
+    digits                  <-  takeWhile1 isDigit
+    return (int digits % (10^(length digits)))
+  just_zero                  =  char '0' >> pure 0
+  positive_number =
+    pure ((int .) . cons) <*> satisfy hi <*> takeWhile isDigit
    where
-    oops c                   =  isAlphaNum c || elem c ".+-"
+    hi d                     =  d > '0' && d <= '9'
+  e                          =  char 'e' <|> char 'E'
 
 
 {-| Parse a JSON Boolean literal.
  -}
 boolean                     ::  Parser JSON
 boolean                      =  Boolean <$> choice
-  [ s_as_b "true" >> return True
-  , s_as_b "false" >> return False
+  [ s_as_b "true" >> pure True
+  , s_as_b "false" >> pure False
   ]
 
 
