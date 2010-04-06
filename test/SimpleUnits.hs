@@ -6,8 +6,7 @@
 
 import Data.List (concatMap, nub)
 import Data.Ratio
-import Data.ByteString.Lazy.Char8 (pack)
-import qualified Data.ByteString.Char8 as Strict
+import Data.ByteString.Char8 (pack)
 import Test.QuickCheck
 
 import Data.Trie
@@ -109,22 +108,22 @@ structure_tests =
   , ( "[22.0 ,7.6,]", (JSONb.Array . fmap JSONb.Number) [22, 7.6]
     , ["array", "weird comma spacing", "extra comma", "floats"] )
   , ( "[\"22.0\" ,7.6,]"
-    , JSONb.Array [(JSONb.String . Strict.pack) "22.0", JSONb.Number 7.6]
+    , JSONb.Array [(JSONb.String . pack) "22.0", JSONb.Number 7.6]
     , ["array", "weird comma spacing", "extra comma", "floats", "strings"] )
   , ( "{ \"ixion\":6 }"
-    , (JSONb.Object . fromList) [(Strict.pack "ixion", JSONb.Number 6)]
+    , (JSONb.Object . fromList) [(pack "ixion", JSONb.Number 6)]
     , ["object", "no commas", "integers"] )
   , ( "{ \"Ack\":\"Success\" ,\"Build\" :\"e605_core_Bundled_8000231_R1\"}"
     , (JSONb.Object . fromList)
-        [ (Strict.pack "Ack", JSONb.String (Strict.pack "Success"))
-        , ( Strict.pack "Build"
-          , JSONb.String (Strict.pack "e605_core_Bundled_8000231_R1") ) ]
+        [ (pack "Ack", JSONb.String (pack "Success"))
+        , ( pack "Build"
+          , JSONb.String (pack "e605_core_Bundled_8000231_R1") ) ]
     , ["object", "random spacing", "strings"] )
   , ( "{\n\"Ack\"\n:\n\"Success\" , \"Build\":\"e605_core_Bundled_8000231_R1\"}"
     , (JSONb.Object . fromList)
-        [ (Strict.pack "Ack", JSONb.String (Strict.pack "Success"))
-        , ( Strict.pack "Build"
-          , JSONb.String (Strict.pack "e605_core_Bundled_8000231_R1") ) ]
+        [ (pack "Ack", JSONb.String (pack "Success"))
+        , ( pack "Build"
+          , JSONb.String (pack "e605_core_Bundled_8000231_R1") ) ]
     , ["object", "newlines", "strings"] )
   , ( "{}", JSONb.Object empty
     , ["object", "compact spacing", "empty"] )
@@ -132,9 +131,9 @@ structure_tests =
     , ["object", "normal spacing", "empty"] )
   , ( "{\"Ack\":\"Success\",\"Build\":\"e605_core_Bundled_8000231_R1\"}"
     , (JSONb.Object . fromList)
-        [ (Strict.pack "Ack", JSONb.String (Strict.pack "Success"))
-        , ( Strict.pack "Build"
-          , JSONb.String (Strict.pack "e605_core_Bundled_8000231_R1") ) ]
+        [ (pack "Ack", JSONb.String (pack "Success"))
+        , ( pack "Build"
+          , JSONb.String (pack "e605_core_Bundled_8000231_R1") ) ]
     , ["object", "compact spacing", "strings"] )
   ]
 
