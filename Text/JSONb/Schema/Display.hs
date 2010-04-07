@@ -49,7 +49,6 @@ instance (Display counter) => Display (Schema counter) where
          where
           colon              =  take (m - length k') space `append` pack " : "
           k'                 =  fromChunks [k]
-          k''                =  length k'
           bar                =  '\n' `cons` take m space `append` pack " | "
           set'               =  (fmap bytes . Set.toList) set
           join               =  if must_be_multiline 3 set'
