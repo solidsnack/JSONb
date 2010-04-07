@@ -16,12 +16,14 @@ import Prelude hiding
   , repeat
   , elem
   , take
+  , concat
   )
 import System.Exit
 import System.IO (stderr, stdout)
 import System.Environment
-import Data.ByteString.Lazy (hPutStr)
-import Data.ByteString.Lazy.Char8 hiding (any, reverse, foldr)
+import Data.ByteString (hPutStr)
+import Data.ByteString.Char8 hiding (any, reverse, foldr)
+import Data.ByteString.Lazy.Char8 (toChunks)
 import Data.Word
 import qualified Data.Set as Set
 
@@ -87,7 +89,9 @@ main                         =  do
   op schemas                 =  interact (display . schemas . progressive)
 
 
-display                      =  unlines . fmap JSONb.bytes
+display                      =  unlines . fmap (strictify . JSONb.bytes)
+ where
+  strictify                  =  concat . toChunks
 
 
 progressive                  =  progressive_parse' []
