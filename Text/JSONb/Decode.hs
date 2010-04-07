@@ -116,22 +116,21 @@ string                       =  String <$> string_literal
  -}
 number                      ::  Parser JSON
 number                       =  Number <$> do
-  (sign :: Rational)        <-  (char '-' >> pure (-1)) <|> pure 1
+  (sign :: Rational)        <-  (char '-' *> pure (-1)) <|> pure 1
   i                         <-  just_zero <|> positive_number
   f                         <-  option 0 fractional
-  e                         <-  option 0 (e >> signed decimal)
+  e                         <-  option 0 (exponentialE *> signed decimal)
   return (sign * (i + f) * (10^e))
  where
+  exponentialE               =  char 'e' <|> char 'E'
   fractional                 =  do
     c                       <-  char '.'
     digits                  <-  takeWhile1 isDigit
     return (int digits % (10^(length digits)))
-  just_zero                  =  char '0' >> pure 0
-  positive_number =
-    pure ((int .) . cons) <*> satisfy hi <*> takeWhile isDigit
+  just_zero                  =  char '0' *> pure 0
+  positive_number = pure ((int .) . cons) <*> satisfy hi <*> takeWhile isDigit
    where
     hi d                     =  d > '0' && d <= '9'
-  e                          =  char 'e' <|> char 'E'
 
 
 {-| Parse a JSON Boolean literal.

@@ -90,8 +90,10 @@ data Bound n where
   Infinite                  ::  (Show n, Num n) => Bound n
 
 
-rt                           =  JSONb.decode . pack
-
+rt                           =  JSONb.decode . pack . (++ " ")
+{- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  We have to add a space so that the number parser terminates.  
+ - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -}
 
 
 structure_tests =
