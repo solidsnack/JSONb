@@ -120,7 +120,7 @@ number                       =  Number <$> do
   i                         <-  just_zero <|> positive_number
   f                         <-  option 0 fractional
   e                         <-  option 0 (exponentialE *> signed decimal)
-  return (sign * (i + f) * (10^e))
+  return (sign * (i + f) * (10^^e))
  where
   exponentialE               =  char 'e' <|> char 'E'
   fractional                 =  do
