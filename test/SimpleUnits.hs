@@ -8,7 +8,6 @@ import Data.List (concatMap, nub)
 import Data.Ratio
 import Data.ByteString.Char8 (pack)
 import Test.QuickCheck
-import Test.QuickCheck.Arbitrary
 
 import Data.Trie
 import qualified Data.ByteString.UTF8 as UTF8
