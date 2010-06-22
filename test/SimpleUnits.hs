@@ -60,8 +60,8 @@ prop_double_round_trip n     =  collect bin $ case (rt . show) n of
 
 
 prop_string_round_trip s     =  high . escapes $ case round_trip bytes of
-    Right (JSONb.String b)  ->  bytes == b
-    _                       ->  False
+  Right (JSONb.String b)    ->  bytes == b
+  _                         ->  False
  where
   bytes                      =  UTF8.fromString s
   round_trip = JSONb.decode . JSONb.encode JSONb.Compact . JSONb.String
