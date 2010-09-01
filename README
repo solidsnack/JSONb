@@ -1,21 +1,3 @@
-  JSONb is a library for parsing JSON from lazy ByteStrings. It assumes the
-  input is UTF-8.
-
-
-                                                                    Test Suite
-   ----------------------------------------------------------------------------
-
-    We test the library by:
-
-   .  Pulling down large amounts of JSON from various web service providers.
-
-   .  Parsing and unparsing the JSON with our parser.
-
-   .  Feeding the original JSON along with our unparsed variety to the
-      json.org parser.
-
-   .  Testing that our parsed-unparsed JSON parses to the same JavaScript
-      values as the original JSON from the point of view of the json.org
-      parser.
-
+  JSONb is a library for parsing JSON from strict ByteStrings, based on
+  AttoParsec. It assumes the input is UTF-8.
 
