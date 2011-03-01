@@ -22,7 +22,9 @@ import Control.Applicative hiding (empty)
 import qualified Data.ByteString.UTF8 as UTF8
 import qualified Data.Trie.Convenience as Trie
 import Data.Attoparsec (eitherResult)
-import Data.Attoparsec.Char8 hiding (string, isDigit)
+import Data.Attoparsec.Char8 ( choice, char, Parser, option, takeWhile1,
+                               takeWhile, skipMany, satisfy, signed,
+                               decimal, Result(..)                       )
 import qualified Data.Attoparsec.Char8 as Attoparsec
 import Data.ByteString.Nums.Careless
 
