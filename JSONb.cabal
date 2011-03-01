@@ -1,10 +1,10 @@
 name                          : JSONb
-version                       : 1.0.2
+version                       : 1.0.3
 category                      : Text
 license                       : BSD3
 license-file                  : LICENSE
 author                        : Jason Dusek
-maintainer                    : jsonb@solidsnack.be 
+maintainer                    : jsonb@solidsnack.be
 homepage                      : http://github.com/solidsnack/JSONb/
 synopsis                      : JSON parser that uses byte strings.
 description                   :
