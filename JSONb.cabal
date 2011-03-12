@@ -1,5 +1,5 @@
 name                          : JSONb
-version                       : 1.0.3
+version                       : 1.0.4
 category                      : Text
 license                       : BSD3
 license-file                  : LICENSE
@@ -12,7 +12,9 @@ description                   :
   format backed with strict ByteStrings, Rationals and ByteString tries. See
   the schema generation tools and the command line JSON schema generator (in
   the examples subdir) for an example of how to use the parsing tools.
-
+  .
+  Have you considered @aeson@ (<http://hackage.haskell.org/package/aeson>), a
+  newer, extensively benchmarked JSON parsing library?
 
 cabal-version                 : >= 1.2.3
 build-type                    : Simple
