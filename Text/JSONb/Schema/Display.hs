@@ -73,8 +73,7 @@ dent n                       =  intercalate ('\n' `cons` take n space) . lines
 
 space                        =  repeat ' '
 
-{-| Warning -- does not work on empty tries. 
- -}
+-- Warning -- does not work on empty tries. 
 longest_key_len              =  length . foldl1' longest . lazify . Trie.keys
  where
   lazify                     =  fmap $ fromChunks . (:[])
