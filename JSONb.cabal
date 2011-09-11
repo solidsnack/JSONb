@@ -1,5 +1,5 @@
 name                          : JSONb
-version                       : 1.0.4
+version                       : 1.0.5
 category                      : Text
 license                       : BSD3
 license-file                  : LICENSE
@@ -27,7 +27,7 @@ library
                               , containers
                               , utf8-string >= 0.3
                               , bytestring >= 0.9
-                              , attoparsec >= 0.8 && < 0.9
+                              , attoparsec >= 0.8
                               , bytestring-nums >= 0.3.1
                               , bytestring-trie >= 0.1.4
   exposed-modules             : Text.JSONb
