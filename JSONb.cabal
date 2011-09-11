@@ -1,5 +1,5 @@
 name                          : JSONb
-version                       : 1.0.5
+version                       : 1.0.6
 category                      : Text
 license                       : BSD3
 license-file                  : LICENSE
@@ -50,7 +50,7 @@ executable                      json-schema
                               , containers
                               , utf8-string >= 0.3
                               , bytestring >= 0.9
-                              , attoparsec >= 0.8 && < 0.9
+                              , attoparsec >= 0.8
                               , bytestring-nums >= 0.3.1
                               , bytestring-trie >= 0.1.4
   extensions                  : FlexibleInstances
