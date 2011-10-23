@@ -16,10 +16,19 @@ description                   :
   Have you considered @aeson@ (<http://hackage.haskell.org/package/aeson>), a
   newer, extensively benchmarked JSON parsing library?
 
-cabal-version                 : >= 1.2.3
+cabal-version                 : >= 1.6
 build-type                    : Simple
 extra-source-files            : README
                                 test/SimpleUnits.hs
+
+source-repository               head
+  type                        : git
+  location                    : http://github.com/solidsnack/JSONb.git
+
+
+flag cli
+  description                 : Enable command line tool.
+  default                     : False
 
 
 library
@@ -46,7 +55,11 @@ library
 
 executable                      json-schema
   main-is                     : examples/JSONSchema.hs
-  build-depends               : base 
+  if flag(cli)
+    buildable                 : True
+  else
+    buildable                 : False
+  build-depends               : base >= 2 && <= 5
                               , containers
                               , utf8-string >= 0.3
                               , bytestring >= 0.9
