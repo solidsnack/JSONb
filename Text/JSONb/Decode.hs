@@ -24,8 +24,9 @@ import qualified Data.Trie.Convenience as Trie
 import Data.Attoparsec (eitherResult)
 import Data.Attoparsec.Char8 ( choice, char, Parser, option, takeWhile1,
                                takeWhile, skipMany, satisfy, signed,
-                               decimal, Result(..)                       )
+                               decimal                                   )
 import qualified Data.Attoparsec.Char8 as Attoparsec
+import qualified Data.Attoparsec.Types as AttoparsecT
 import Data.ByteString.Nums.Careless
 
 import Text.JSONb.Simple
@@ -45,9 +46,9 @@ decode bytes                 =  (eitherResult . Attoparsec.parse json) bytes
  -}
 break                       ::  ByteString -> (Either String JSON, ByteString)
 break bytes                  =  case Attoparsec.parse json bytes of
-  Done remainder result     ->  (Right result, remainder)
-  Fail _ _ s                ->  (Left s, bytes)
-  Partial _                 ->  (Left "Partial", bytes)
+  AttoparsecT.Done remainder result     ->  (Right result, remainder)
+  AttoparsecT.Fail _ _ s                ->  (Left s, bytes)
+  AttoparsecT.Partial _                 ->  (Left "Partial", bytes)
 
 
 {-| Tries to parse any JSON literal.
