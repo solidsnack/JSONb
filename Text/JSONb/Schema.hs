@@ -11,9 +11,11 @@ module Text.JSONb.Schema where
 import Data.Ord
 import Data.Word
 import Data.List (permutations)
-import Data.Set as Set hiding (foldr)
+import Data.Set (Set)
+import qualified Data.Set as Set
 
-import Data.Trie as Trie
+import Data.Trie (Trie)
+import qualified Data.Trie as Trie
 
 import qualified Text.JSONb.Simple as Simple
 
